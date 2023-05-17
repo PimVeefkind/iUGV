@@ -31,7 +31,7 @@ def load_or_create_landscape(envs_params: dict) -> tuple[Landscape,str]:
         terrain = pickle.load(open(os.getcwd()+directory+filename,'rb'))
     except:
         if envs_params['NAME'] == 'gaussian':
-            terrain = create_gaussian_landscape(size, pixel_size)
+            terrain = create_gaussian_landscape(size, pixel_size, max_height= size/10)
 
     return terrain, f"size={size}-pixel_size={pixel_size}"
 

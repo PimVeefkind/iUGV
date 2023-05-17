@@ -2,25 +2,27 @@ ENVIRONMENT:
   NAME: gaussian
   SIZE:
     - 100
+    - 250
     - 500
+    - 750
     - 1000
-    - 2000
-    - 3500
-    - 5000
+    - 1250
+    - 1500
   PIXEL_SIZE: 1.
 
 
 GRAPH_CONSTRUCTION:
+  PRECOMPUTE_WEIGHTS: true
   COST_FUNCTION: linear
   PARAMETERS:
-    ASCENDING: 0.25
-    DESCENDING: 0.05
-    PERPENDICULAR: 0.25
+    ASCENDING: 10
+    DESCENDING: 0.1
+    PERPENDICULAR: 10
   CONNECTION_DEGREE: 2
 
 PATH_FINDING:
   METHODS:
-    - dijkstra
+    #- dijkstra
     - a_star
   SOURCE_X: 0 #source and target are as a fraction of size
   SOURCE_Y: 0.5

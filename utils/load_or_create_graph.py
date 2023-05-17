@@ -18,7 +18,7 @@ def load_or_create_graph(terrain: Landscape, cost_function: Callable, args: dict
 
     directory = f"/graphs/{args['ENVIRONMENT']['NAME']}/"
     filename = f"{file}_{cost_function.__name__}_asc={gc_params['ASCENDING']}_desc={gc_params['DESCENDING']}" + \
-                f"_perp={gc_params['PERPENDICULAR']}_conn={gc_args['CONNECTION_DEGREE']}.pickle"
+                f"_perp={gc_params['PERPENDICULAR']}_conn={gc_args['CONNECTION_DEGREE']}_pcc={gc_args['PRECOMPUTE_WEIGHTS']}.pickle"
 
     try:
         graph = pickle.load(open(repr(os.getcwd()+directory+filename),'rb'))
@@ -32,6 +32,8 @@ def load_or_create_graph(terrain: Landscape, cost_function: Callable, args: dict
 def create_graph(terrain: Landscape, cost_function: Callable, args: dict, filename: str):
 
     print('Could not find pickled graph file with specified parameters, creating one instead...')
+
+    construct_begin = time.time()
 
     pixel_size = args['ENVIRONMENT']['PIXEL_SIZE']
     connection_degree_to_distance = {1: pixel_size+1e-5,
@@ -52,20 +54,26 @@ def create_graph(terrain: Landscape, cost_function: Callable, args: dict, filena
     # because we work with directed graph, edges also need to be inverted:
     reverse_edges = list((target,source) for source,target in edges)
     edges.extend(reverse_edges)
-    print(f'constructing graph took {t-time.time()}s')
+    print(f'constructing graph took {time.time()-t}s')
 
-    #compute weights for edges
-    params = args['GRAPH_CONSTRUCTION']['PARAMETERS']
+    #compute weights for edges if precompute mode is on.
+    if args['GRAPH_CONSTRUCTION']['PRECOMPUTE_WEIGHTS']:
+        
+        params = args['GRAPH_CONSTRUCTION']['PARAMETERS']
 
-    t = time.time()
-    weights = cost_function(terrain.z_coords, edges, args['ENVIRONMENT']['PIXEL_SIZE'], params['ASCENDING'],params['DESCENDING'],params['PERPENDICULAR'])
-    print(f'calculating weights took {t-time.time()}s')
+        t = time.time()
+        weights = cost_function(terrain.z_coords, edges, args['ENVIRONMENT']['PIXEL_SIZE'], params['ASCENDING'],params['DESCENDING'],params['PERPENDICULAR'])
+        print(f'calculating weights took {time.time()-t}s')
 
-    #Then connect points that are closer than de connection radius
-    graph.add_weighted_edges_from(list((*edge, weight) for edge, weight in zip(edges,weights)))
+        #Then connect points that are closer than de connection radius
+        graph.add_weighted_edges_from(list((*edge, weight) for edge, weight in zip(edges,weights)))
 
-    pickle.dump(graph, open(os.getcwd()+f"/graphs/{args['ENVIRONMENT']['NAME']}/{filename}.pickle",'wb'))
+    else:
+        graph.add_edges_from(edges)
+
+
+    #pickle.dump(graph, open(os.getcwd()+f"/graphs/{args['ENVIRONMENT']['NAME']}/{filename}.pickle",'wb'))
     
     print('finished creating graph.')
 
-    return graph
+    return graph, time.time() - construct_begin

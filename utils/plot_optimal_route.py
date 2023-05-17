@@ -14,7 +14,7 @@ def plot_optimal_route(terrain: Landscape, routes: dict, endpoints = tuple):
     linestyles = ['solid', 'dashed']
 
     ax.plot_surface(terrain.x_coords, terrain.y_coords, terrain.z_coords, 
-                    edgecolor='blue', lw=0.5, rstride=10, cstride=10,
+                    edgecolor='blue', lw=0.5, rstride=25, cstride=25,
                     alpha=0.3)
     
     ax.scatter(terrain.x_coords[endpoints[0]],terrain.y_coords[endpoints[0]],\

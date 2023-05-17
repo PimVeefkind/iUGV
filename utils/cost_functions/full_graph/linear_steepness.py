@@ -1,8 +1,6 @@
 
 import numpy as np
 
-from numba import jit
-
 #@jit(nopython = True)
 def linear_steepness_cost_function(z_coords: np.ndarray, edges: list[tuple],  pixel_size: float, pen_asc: float,
                                     pen_desc: float, pen_perp: float)\
