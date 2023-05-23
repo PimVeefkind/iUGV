@@ -11,7 +11,7 @@ from typing import Callable
 
 from .load_or_create_landscape import Landscape
 
-def load_or_create_graph(terrain: Landscape, cost_function: Callable, args: dict, file: str) -> nx.DiGraph:
+def load_or_create_graph(terrain: Landscape, obstacle_map: np.ndarray, cost_function: Callable, args: dict, file: str) -> nx.DiGraph:
 
     gc_args = args['GRAPH_CONSTRUCTION'] #gc arguments
     gc_params = gc_args['PARAMETERS']
@@ -23,13 +23,11 @@ def load_or_create_graph(terrain: Landscape, cost_function: Callable, args: dict
     try:
         graph = pickle.load(open(repr(os.getcwd()+directory+filename),'rb'))
     except:
-        graph = create_graph(terrain, cost_function, args, filename)
+        graph = create_graph(terrain, obstacle_map, cost_function, args, filename)
 
     return graph
 
-    
-
-def create_graph(terrain: Landscape, cost_function: Callable, args: dict, filename: str):
+def create_graph(terrain: Landscape, obstacle_map: np.ndarray, cost_function: Callable, args: dict, filename: str):
 
     print('Could not find pickled graph file with specified parameters, creating one instead...')
 
@@ -44,9 +42,9 @@ def create_graph(terrain: Landscape, cost_function: Callable, args: dict, filena
     graph = nx.DiGraph()
 
     # Then populate it with nodes and associate with each graph lattice point a physical location
-    x_of_nodes, y_of_nodes = np.meshgrid(np.arange(terrain.x_coords.shape[0]),np.arange(terrain.x_coords.shape[0]))
-    nodes = list(zip(x_of_nodes.flatten(),y_of_nodes.flatten()))
-    pos_of_nodes = list(zip(terrain.x_coords.flatten(),terrain.y_coords.flatten()))
+    x_of_nodes, y_of_nodes = np.where(obstacle_map == 0)
+    nodes = list(zip(x_of_nodes,y_of_nodes))
+    pos_of_nodes = list(zip(terrain.x_coords[x_of_nodes,y_of_nodes].flatten(),terrain.y_coords[x_of_nodes,y_of_nodes].flatten()))
     graph.add_nodes_from(list((node, {"pos": pos_of_node}) for node, pos_of_node in zip(nodes, pos_of_nodes)))
 
     #Then connect points that are closer than de connection radius

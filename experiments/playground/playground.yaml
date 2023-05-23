@@ -3,6 +3,16 @@ ENVIRONMENT:
   SIZE:
     - 250
   PIXEL_SIZE: 1.
+  OBSTACLE: 
+    NAME: square
+    PARAMS:
+      FRACS_X:
+        - 0.45
+        - 0.55
+      FRACS_Y:
+        - 0.0
+        - 0.95
+  
 
 
 GRAPH_CONSTRUCTION:

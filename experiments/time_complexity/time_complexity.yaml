@@ -9,6 +9,8 @@ ENVIRONMENT:
     - 1250
     - 1500
   PIXEL_SIZE: 1.
+  OBSTACLE: 
+    NAME: open
 
 
 GRAPH_CONSTRUCTION:
